@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="uclid.xtext.feature"
+      label="Uclid Editor"
+      version="1.0.0.qualifier"
+      provider-name="University Rennes 1">
+
+   <description url="http://www.example.com/description">
+      This is an Eclipse based editor/IDE for the Uclid modeling langage (https://github.com/uclid-org/uclid).
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import feature="org.eclipse.xtext.runtime" version="2.22.0.v20200602-1533"/>
+      <import feature="org.eclipse.xtext.redist" version="2.22.0.v20200602-1533"/>
+      <import feature="org.eclipse.xtext.ui" version="2.22.0.v20200602-1533"/>
+      <import feature="org.eclipse.xtext.xtext.ui" version="2.22.0.v20200602-1533"/>
+   </requires>
+
+   <plugin
+         id="uclid.xtext"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="uclid.xtext.ide"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="uclid.xtext.ui"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.antlr.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>

@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: uclid.xtext
+Bundle-ManifestVersion: 2
+Bundle-Name: uclid.xtext
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: uclid.xtext; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-14
+Export-Package: uclid.xtext.validation,
+ uclid.xtext.uclid.impl,
+ uclid.xtext.uclid.util,
+ uclid.xtext,
+ uclid.xtext.generator,
+ uclid.xtext.serializer,
+ uclid.xtext.uclid,
+ uclid.xtext.services,
+ uclid.xtext.scoping,
+ uclid.xtext.parser.antlr.internal,
+ uclid.xtext.parser.antlr
+Import-Package: org.apache.log4j

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: uclid.xtext.ide
+Bundle-ManifestVersion: 2
+Bundle-Name: uclid.xtext.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: uclid.xtext.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: uclid.xtext,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)"
+Bundle-RequiredExecutionEnvironment: JavaSE-14
+Export-Package: uclid.xtext.ide.contentassist.antlr.internal,
+ uclid.xtext.ide.contentassist.antlr

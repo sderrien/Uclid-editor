@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Uclid update site">
+      Uclid editor update site
+   </description>
+   <feature url="features/uclid.xtext.feature_1.0.0.202101161157.jar" id="uclid.xtext.feature" version="1.0.0.202101161157">
+      <category name="Uclid"/>
+   </feature>
+   <category-def name="Uclid" label="Uclid"/>
+</site>
