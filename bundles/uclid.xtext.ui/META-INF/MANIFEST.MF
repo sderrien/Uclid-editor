@@ -20,10 +20,13 @@ Require-Bundle: uclid.xtext,
  org.eclipse.xtend.lib;bundle-version="2.14.0";resolution:=optional,
  org.eclipse.ui.console;bundle-version="3.9.200",
  org.eclipse.core.commands,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.forms
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-14
 Export-Package: uclid.xtext.ui.internal,
  uclid.xtext.ui.contentassist,
- uclid.xtext.ui.quickfix
+ uclid.xtext.ui.quickfix,
+ uclid.xtext.ui.wizard
 Bundle-Activator: uclid.xtext.ui.internal.XtextActivator

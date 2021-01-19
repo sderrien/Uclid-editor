@@ -22,13 +22,10 @@ import org.eclipse.xtext.xbase.lib.Functions.Function1;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 import org.eclipse.xtext.xbase.lib.IteratorExtensions;
 import org.eclipse.xtext.xbase.lib.Pair;
-import uclid.xtext.uclid.CallStatement;
 import uclid.xtext.uclid.InstanceDecl;
-import uclid.xtext.uclid.ProcedureDecl;
-import uclid.xtext.uclid.SynonymTypeRule;
-import uclid.xtext.uclid.TypeDecl;
+import uclid.xtext.uclid.TypedObjectDecl;
 import uclid.xtext.uclid.VarDecl;
-import uclid.xtext.uclid.VarRef;
+import uclid.xtext.uclid.VarReference;
 
 /**
  * This class contains custom scoping description.
@@ -42,51 +39,51 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
     return EcoreUtil2.<uclid.xtext.uclid.Module>getContainerOfType(e, uclid.xtext.uclid.Module.class);
   }
   
-  public Iterable<Pair<VarDecl, QualifiedName>> getLocalVarsDecl(final uclid.xtext.uclid.Module module) {
-    Iterable<Pair<VarDecl, QualifiedName>> _xblockexpression = null;
+  public Iterable<Pair<TypedObjectDecl, QualifiedName>> getLocalVarsDecl(final uclid.xtext.uclid.Module module) {
+    Iterable<Pair<TypedObjectDecl, QualifiedName>> _xblockexpression = null;
     {
-      final Set<VarDecl> allLocalDecls = IteratorExtensions.<VarDecl>toSet(Iterators.<VarDecl>filter(module.eAllContents(), VarDecl.class));
-      final Function1<VarDecl, Pair<VarDecl, QualifiedName>> _function = (VarDecl it) -> {
+      final Set<TypedObjectDecl> allLocalDecls = IteratorExtensions.<TypedObjectDecl>toSet(Iterators.<TypedObjectDecl>filter(module.eAllContents(), TypedObjectDecl.class));
+      final Function1<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>> _function = (TypedObjectDecl it) -> {
         QualifiedName _create = QualifiedName.create(it.getName());
-        return Pair.<VarDecl, QualifiedName>of(it, _create);
+        return Pair.<TypedObjectDecl, QualifiedName>of(it, _create);
       };
-      _xblockexpression = IterableExtensions.<VarDecl, Pair<VarDecl, QualifiedName>>map(allLocalDecls, _function);
+      _xblockexpression = IterableExtensions.<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>>map(allLocalDecls, _function);
     }
     return _xblockexpression;
   }
   
-  public Iterable<Pair<VarDecl, QualifiedName>> getInstanceLocalVarsDecl(final InstanceDecl instance) {
-    Iterable<Pair<VarDecl, QualifiedName>> _xblockexpression = null;
+  public Iterable<Pair<TypedObjectDecl, QualifiedName>> getInstanceLocalVarsDecl(final InstanceDecl instance) {
+    Iterable<Pair<TypedObjectDecl, QualifiedName>> _xblockexpression = null;
     {
-      final Set<VarDecl> allLocalDecls = IteratorExtensions.<VarDecl>toSet(Iterators.<VarDecl>filter(instance.getModule().eAllContents(), VarDecl.class));
-      final Function1<VarDecl, Pair<VarDecl, QualifiedName>> _function = (VarDecl it) -> {
+      final Set<TypedObjectDecl> allLocalDecls = IteratorExtensions.<TypedObjectDecl>toSet(Iterators.<TypedObjectDecl>filter(instance.getModule().eAllContents(), TypedObjectDecl.class));
+      final Function1<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>> _function = (TypedObjectDecl it) -> {
         String _name = instance.getName();
         String _name_1 = it.getName();
         QualifiedName _create = QualifiedName.create(Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(_name, _name_1)));
-        return Pair.<VarDecl, QualifiedName>of(it, _create);
+        return Pair.<TypedObjectDecl, QualifiedName>of(it, _create);
       };
-      _xblockexpression = IterableExtensions.<VarDecl, Pair<VarDecl, QualifiedName>>map(allLocalDecls, _function);
+      _xblockexpression = IterableExtensions.<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>>map(allLocalDecls, _function);
     }
     return _xblockexpression;
   }
   
-  public Iterable<Pair<VarDecl, QualifiedName>> getVarsInScope(final EObject e) {
-    Iterable<Pair<VarDecl, QualifiedName>> _xblockexpression = null;
+  public Iterable<Pair<? extends TypedObjectDecl, QualifiedName>> getVarsInScope(final EObject e) {
+    Iterable<Pair<? extends TypedObjectDecl, QualifiedName>> _xblockexpression = null;
     {
       final uclid.xtext.uclid.Module module = EcoreUtil2.<uclid.xtext.uclid.Module>getContainerOfType(e, uclid.xtext.uclid.Module.class);
-      final Set<VarDecl> allLocalDecls = IteratorExtensions.<VarDecl>toSet(Iterators.<VarDecl>filter(module.eAllContents(), VarDecl.class));
+      final Set<TypedObjectDecl> allLocalDecls = IteratorExtensions.<TypedObjectDecl>toSet(Iterators.<TypedObjectDecl>filter(module.eAllContents(), TypedObjectDecl.class));
       final Set<InstanceDecl> allInstanceDecls = IteratorExtensions.<InstanceDecl>toSet(Iterators.<InstanceDecl>filter(module.eAllContents(), InstanceDecl.class));
-      final Function1<InstanceDecl, Iterable<Pair<VarDecl, QualifiedName>>> _function = (InstanceDecl it) -> {
+      final Function1<InstanceDecl, Iterable<Pair<TypedObjectDecl, QualifiedName>>> _function = (InstanceDecl it) -> {
         return this.getInstanceLocalVarsDecl(it);
       };
-      IterableExtensions.<Pair<VarDecl, QualifiedName>>toSet(Iterables.<Pair<VarDecl, QualifiedName>>concat(IterableExtensions.<InstanceDecl, Iterable<Pair<VarDecl, QualifiedName>>>map(allInstanceDecls, _function)));
+      IterableExtensions.<Pair<TypedObjectDecl, QualifiedName>>toSet(Iterables.<Pair<TypedObjectDecl, QualifiedName>>concat(IterableExtensions.<InstanceDecl, Iterable<Pair<TypedObjectDecl, QualifiedName>>>map(allInstanceDecls, _function)));
       final EObject root = EcoreUtil2.getRootContainer(e);
       final Set<VarDecl> allDecls = IteratorExtensions.<VarDecl>toSet(Iterators.<VarDecl>filter(root.eAllContents(), VarDecl.class));
-      final Function1<VarDecl, Pair<VarDecl, QualifiedName>> _function_1 = (VarDecl it) -> {
+      final Function1<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>> _function_1 = (TypedObjectDecl it) -> {
         QualifiedName _create = QualifiedName.create(it.getName());
-        return Pair.<VarDecl, QualifiedName>of(it, _create);
+        return Pair.<TypedObjectDecl, QualifiedName>of(it, _create);
       };
-      Iterable<Pair<VarDecl, QualifiedName>> _map = IterableExtensions.<VarDecl, Pair<VarDecl, QualifiedName>>map(allLocalDecls, _function_1);
+      Iterable<Pair<TypedObjectDecl, QualifiedName>> _map = IterableExtensions.<TypedObjectDecl, Pair<TypedObjectDecl, QualifiedName>>map(allLocalDecls, _function_1);
       final Function1<VarDecl, Pair<VarDecl, QualifiedName>> _function_2 = (VarDecl it) -> {
         QualifiedName _xblockexpression_1 = null;
         {
@@ -98,12 +95,12 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
         return Pair.<VarDecl, QualifiedName>of(it, _xblockexpression_1);
       };
       Iterable<Pair<VarDecl, QualifiedName>> _map_1 = IterableExtensions.<VarDecl, Pair<VarDecl, QualifiedName>>map(allDecls, _function_2);
-      Set<Pair<VarDecl, QualifiedName>> _set = IterableExtensions.<Pair<VarDecl, QualifiedName>>toSet(Iterables.<Pair<VarDecl, QualifiedName>>concat(_map, _map_1));
-      final Function1<InstanceDecl, Iterable<Pair<VarDecl, QualifiedName>>> _function_3 = (InstanceDecl it) -> {
+      Set<Pair<? extends TypedObjectDecl, QualifiedName>> _set = IterableExtensions.<Pair<? extends TypedObjectDecl, QualifiedName>>toSet(Iterables.<Pair<? extends TypedObjectDecl, QualifiedName>>concat(_map, _map_1));
+      final Function1<InstanceDecl, Iterable<Pair<TypedObjectDecl, QualifiedName>>> _function_3 = (InstanceDecl it) -> {
         return this.getInstanceLocalVarsDecl(it);
       };
-      Set<Pair<VarDecl, QualifiedName>> _set_1 = IterableExtensions.<Pair<VarDecl, QualifiedName>>toSet(Iterables.<Pair<VarDecl, QualifiedName>>concat(IterableExtensions.<InstanceDecl, Iterable<Pair<VarDecl, QualifiedName>>>map(allInstanceDecls, _function_3)));
-      final Iterable<Pair<VarDecl, QualifiedName>> res = Iterables.<Pair<VarDecl, QualifiedName>>concat(_set, _set_1);
+      Set<Pair<TypedObjectDecl, QualifiedName>> _set_1 = IterableExtensions.<Pair<TypedObjectDecl, QualifiedName>>toSet(Iterables.<Pair<TypedObjectDecl, QualifiedName>>concat(IterableExtensions.<InstanceDecl, Iterable<Pair<TypedObjectDecl, QualifiedName>>>map(allInstanceDecls, _function_3)));
+      final Iterable<Pair<? extends TypedObjectDecl, QualifiedName>> res = Iterables.<Pair<? extends TypedObjectDecl, QualifiedName>>concat(_set, _set_1);
       _xblockexpression = res;
     }
     return _xblockexpression;
@@ -129,46 +126,33 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
     return _xblockexpression;
   }
   
-  public Set<Pair<ProcedureDecl, QualifiedName>> getProcsInScope(final EObject e) {
-    Set<Pair<ProcedureDecl, QualifiedName>> _xblockexpression = null;
-    {
-      final uclid.xtext.uclid.Module module = EcoreUtil2.<uclid.xtext.uclid.Module>getContainerOfType(e, uclid.xtext.uclid.Module.class);
-      final Set<ProcedureDecl> allLocalDecls = IteratorExtensions.<ProcedureDecl>toSet(Iterators.<ProcedureDecl>filter(module.eAllContents(), ProcedureDecl.class));
-      final EObject root = EcoreUtil2.getRootContainer(e);
-      final Set<ProcedureDecl> allDecls = IteratorExtensions.<ProcedureDecl>toSet(Iterators.<ProcedureDecl>filter(root.eAllContents(), ProcedureDecl.class));
-      final Function1<ProcedureDecl, Pair<ProcedureDecl, QualifiedName>> _function = (ProcedureDecl it) -> {
-        QualifiedName _create = QualifiedName.create(it.getName());
-        return Pair.<ProcedureDecl, QualifiedName>of(it, _create);
-      };
-      Iterable<Pair<ProcedureDecl, QualifiedName>> _map = IterableExtensions.<ProcedureDecl, Pair<ProcedureDecl, QualifiedName>>map(allLocalDecls, _function);
-      final Function1<ProcedureDecl, Pair<ProcedureDecl, QualifiedName>> _function_1 = (ProcedureDecl it) -> {
-        QualifiedName _xblockexpression_1 = null;
-        {
-          String _name = this.getModule(it).getName();
-          String _name_1 = it.getName();
-          final QualifiedName qname = QualifiedName.create(Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(_name, _name_1)));
-          _xblockexpression_1 = qname;
-        }
-        return Pair.<ProcedureDecl, QualifiedName>of(it, _xblockexpression_1);
-      };
-      Iterable<Pair<ProcedureDecl, QualifiedName>> _map_1 = IterableExtensions.<ProcedureDecl, Pair<ProcedureDecl, QualifiedName>>map(allDecls, _function_1);
-      final Set<Pair<ProcedureDecl, QualifiedName>> res = IterableExtensions.<Pair<ProcedureDecl, QualifiedName>>toSet(Iterables.<Pair<ProcedureDecl, QualifiedName>>concat(_map, _map_1));
-      _xblockexpression = res;
-    }
-    return _xblockexpression;
-  }
-  
-  protected IScope _getScope(final VarRef context, final EReference reference) {
+  protected IScope _getScope(final EObject context, final EReference reference) {
     String _name = reference.getName();
     boolean _equals = Objects.equal(_name, "var");
     if (_equals) {
-      final Iterable<Pair<VarDecl, QualifiedName>> allQNames = this.getVarsInScope(context);
-      final Function1<Pair<VarDecl, QualifiedName>, EObjectDescription> _function = (Pair<VarDecl, QualifiedName> it) -> {
+      final Iterable<Pair<? extends TypedObjectDecl, QualifiedName>> allQNames = this.getVarsInScope(context);
+      final Function1<Pair<? extends TypedObjectDecl, QualifiedName>, EObjectDescription> _function = (Pair<? extends TypedObjectDecl, QualifiedName> it) -> {
         QualifiedName _value = it.getValue();
-        VarDecl _key = it.getKey();
+        TypedObjectDecl _key = it.getKey();
         return new EObjectDescription(_value, _key, null);
       };
-      Set<EObjectDescription> objdesr = IterableExtensions.<EObjectDescription>toSet(IterableExtensions.<Pair<VarDecl, QualifiedName>, EObjectDescription>map(allQNames, _function));
+      Set<EObjectDescription> objdesr = IterableExtensions.<EObjectDescription>toSet(IterableExtensions.<Pair<? extends TypedObjectDecl, QualifiedName>, EObjectDescription>map(allQNames, _function));
+      return new SimpleScope(IScope.NULLSCOPE, ((Iterable) objdesr));
+    }
+    return IScope.NULLSCOPE;
+  }
+  
+  protected IScope _getScope(final VarReference context, final EReference reference) {
+    String _name = reference.getName();
+    boolean _equals = Objects.equal(_name, "var");
+    if (_equals) {
+      final Iterable<Pair<? extends TypedObjectDecl, QualifiedName>> allQNames = this.getVarsInScope(context);
+      final Function1<Pair<? extends TypedObjectDecl, QualifiedName>, EObjectDescription> _function = (Pair<? extends TypedObjectDecl, QualifiedName> it) -> {
+        QualifiedName _value = it.getValue();
+        TypedObjectDecl _key = it.getKey();
+        return new EObjectDescription(_value, _key, null);
+      };
+      Set<EObjectDescription> objdesr = IterableExtensions.<EObjectDescription>toSet(IterableExtensions.<Pair<? extends TypedObjectDecl, QualifiedName>, EObjectDescription>map(allQNames, _function));
       return new SimpleScope(IScope.NULLSCOPE, ((Iterable) objdesr));
     }
     return IScope.NULLSCOPE;
@@ -193,22 +177,6 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
     return IScope.NULLSCOPE;
   }
   
-  protected IScope _getScope(final CallStatement context, final EReference reference) {
-    String _name = reference.getName();
-    boolean _equals = Objects.equal(_name, "var");
-    if (_equals) {
-      final Set<Pair<ProcedureDecl, QualifiedName>> allQNames = this.getProcsInScope(context);
-      final Function1<Pair<ProcedureDecl, QualifiedName>, EObjectDescription> _function = (Pair<ProcedureDecl, QualifiedName> it) -> {
-        QualifiedName _value = it.getValue();
-        ProcedureDecl _key = it.getKey();
-        return new EObjectDescription(_value, _key, null);
-      };
-      Set<EObjectDescription> objdesr = IterableExtensions.<EObjectDescription>toSet(IterableExtensions.<Pair<ProcedureDecl, QualifiedName>, EObjectDescription>map(allQNames, _function));
-      return new SimpleScope(IScope.NULLSCOPE, ((Iterable) objdesr));
-    }
-    return IScope.NULLSCOPE;
-  }
-  
   /**
    * Find the first object which is an instance of a subtype of <code>c</code>
    * in the eContainer chain. Returns null if none is found.
@@ -223,8 +191,7 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
       {
         boolean _isInstance = c.isInstance(current);
         if (_isInstance) {
-          final T current2 = ((T) current);
-          return current2;
+          return ((T) current);
         }
         current = current.eContainer();
       }
@@ -232,46 +199,13 @@ public class UclidScopeProvider extends ImportedNamespaceAwareLocalScopeProvider
     return null;
   }
   
-  protected IScope _getScope(final SynonymTypeRule context, final EReference reference) {
-    final EObject root = EcoreUtil2.getRootContainer(context);
-    if ((Objects.equal(reference.getName(), "decl") && (root != null))) {
-      final Set<TypeDecl> allDecls = IteratorExtensions.<TypeDecl>toSet(Iterators.<TypeDecl>filter(root.eAllContents(), TypeDecl.class));
-      final Function1<TypeDecl, EObjectDescription> _function = (TypeDecl it) -> {
-        EObjectDescription _xblockexpression = null;
-        {
-          final String label = it.getName();
-          final QualifiedName qname = this.getQualifiedNameConverter().toQualifiedName(label);
-          _xblockexpression = new EObjectDescription(qname, it, null);
-        }
-        return _xblockexpression;
-      };
-      Set<EObjectDescription> objdesr = IterableExtensions.<EObjectDescription>toSet(IterableExtensions.<TypeDecl, EObjectDescription>map(allDecls, _function));
-      final uclid.xtext.uclid.Module module = UclidScopeProvider.<uclid.xtext.uclid.Module>eContainerTypeSelect(context, uclid.xtext.uclid.Module.class);
-      final Function1<TypeDecl, EObjectDescription> _function_1 = (TypeDecl it) -> {
-        EObjectDescription _xblockexpression = null;
-        {
-          final String label = it.getName();
-          QualifiedName _create = QualifiedName.create(Collections.<String>unmodifiableList(CollectionLiterals.<String>newArrayList(label)));
-          _xblockexpression = new EObjectDescription(_create, it, null);
-        }
-        return _xblockexpression;
-      };
-      Iterable<EObjectDescription> _map = IterableExtensions.<TypeDecl, EObjectDescription>map(Iterables.<TypeDecl>filter(module.getD(), TypeDecl.class), _function_1);
-      Iterables.<EObjectDescription>addAll(objdesr, _map);
-      return new SimpleScope(IScope.NULLSCOPE, ((Iterable) objdesr));
-    }
-    return IScope.NULLSCOPE;
-  }
-  
   public IScope getScope(final EObject context, final EReference reference) {
-    if (context instanceof CallStatement) {
-      return _getScope((CallStatement)context, reference);
-    } else if (context instanceof InstanceDecl) {
+    if (context instanceof InstanceDecl) {
       return _getScope((InstanceDecl)context, reference);
-    } else if (context instanceof SynonymTypeRule) {
-      return _getScope((SynonymTypeRule)context, reference);
-    } else if (context instanceof VarRef) {
-      return _getScope((VarRef)context, reference);
+    } else if (context instanceof VarReference) {
+      return _getScope((VarReference)context, reference);
+    } else if (context != null) {
+      return _getScope(context, reference);
     } else {
       throw new IllegalArgumentException("Unhandled parameter types: " +
         Arrays.<Object>asList(context, reference).toString());

@@ -7,11 +7,79 @@
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
-			extensions="ucl"
+			extensions="uclid"
 			id="uclid.xtext.Uclid"
 			name="Uclid Editor">
 		</editor>
 	</extension>
+	<extension
+      point="org.eclipse.ui.console.consoleFactories">
+   <consoleFactory
+         class="uclid.xtext.ui.UclidConsoleFactory"
+         icon="icons/etool16/my-console.png"
+         label="Uclid Console">
+   </consoleFactory>
+</extension>
+
+<extension point="org.eclipse.ui.bindings">
+		<key sequence="CTRL+7"
+			commandId="uclid.xtext.ui.commands.runUclid"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="uclid.xtext.ui.UclidEditorScope"/>
+</extension>
+
+
+<extension point="org.eclipse.ui.bindings">
+		<key sequence="M1+U"
+			commandId="uclid.xtext.ui.commands.runUclid"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="uclid.xtext.ui.UclidEditorScope"/>
+</extension>
+
+<extension point="org.eclipse.ui.bindings">
+		<key sequence="M2+U"
+			commandId="uclid.xtext.ui.commands.runUclid"
+			schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+			contextId="uclid.xtext.ui.UclidEditorScope"/>
+</extension>
+
+<extension point="org.eclipse.ui.contexts">
+   <context name="UClid mode"
+		description="UClid mode"
+        parentId="org.eclipse.ui.textEditorScope"
+        id="uclid.xtext.ui.UclidEditorScope" />
+</extension>
+
+<extension
+		point="org.eclipse.ui.commands">
+		<command
+       id="uclid.xtext.ui.commands.runUclid"
+       name="Run Uclid tool Command">
+ </command>
+</extension>
+
+<extension
+		point="org.eclipse.ui.handlers">
+  <handler
+        class="uclid.xtext.ui.commands.UclidRunCommandHandler"
+        commandId="uclid.xtext.ui.commands.runUclid">
+  </handler>
+</extension>
+
+<extension point="org.eclipse.ui.menus">
+
+<menuContribution
+	locationURI="popup:org.eclipse.ui.popup.any?before=additions">
+	        
+	<command commandId="uclid.xtext.ui.commands.runUclid">
+	</command>
+	
+</menuContribution>
+	
+</extension>
+
+	
+
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
@@ -97,6 +165,12 @@
 			name="Templates">
 			<keywordReference id="uclid.xtext.ui.keyword_Uclid"/>
 		</page>
+  <page
+        category="uclid.xtext.Uclid"
+        class="uclid.xtext.ui.preferences.UclidPreferencePage"
+        id="uclid.xtext.ui.preferences.UclidPreferencePage"
+        name="Uclid tool path setting">
+  </page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
@@ -207,7 +281,7 @@
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type
 			base-type="org.eclipse.core.runtime.text"
-			file-extensions="ucl"
+			file-extensions="uclid"
 			id="uclid.xtext.Uclid.contenttype"
 			name="Uclid File"
 			priority="normal">
@@ -218,13 +292,13 @@
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
-			type="ucl">
+			type="uclid">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
-			uriExtension="ucl">
+			uriExtension="uclid">
 		</resourceServiceProvider>
 	</extension>
 	<!-- marker definitions for uclid.xtext.Uclid -->
@@ -261,7 +335,7 @@
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
-			fileExtensions="ucl"/>
+			fileExtensions="uclid"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
@@ -404,7 +478,7 @@
 	<extension point="org.eclipse.compare.contentViewers">
 		<viewer id="uclid.xtext.Uclid.compare.contentViewers"
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="ucl">
+			extensions="uclid">
 		</viewer>
 		<contentTypeBinding
 			contentTypeId="uclid.xtext.Uclid.contenttype"
@@ -413,7 +487,7 @@
 	<extension point="org.eclipse.compare.contentMergeViewers">
 		<viewer id="uclid.xtext.Uclid.compare.contentMergeViewers"
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="ucl" label="Uclid Compare">
+			extensions="uclid" label="Uclid Compare">
 		</viewer>
 		<contentTypeBinding
 			contentTypeId="uclid.xtext.Uclid.contenttype"
@@ -422,13 +496,84 @@
 	<extension point="org.eclipse.ui.editors.documentProviders">
 		<provider id="uclid.xtext.Uclid.editors.documentProviders"
 			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
-			extensions="ucl">
+			extensions="uclid">
 		</provider>
 	</extension>
 	<extension point="org.eclipse.team.core.fileTypes">
 		<fileTypes
-			extension="ucl"
+			extension="uclid"
 			type="text">
 		</fileTypes>
 	</extension>
-</plugin>
+
+	<extension
+       point="org.eclipse.core.runtime.preferences">
+    <initializer
+          class="uclid.xtext.ui.preferences.PreferenceInitializer">
+    </initializer>
+ 	</extension>
+	
+	
+	
+	<extension
+		point="org.eclipse.ui.newWizards">
+		<wizard
+			category="org.eclipse.xtext.projectwiz"
+			class="uclid.xtext.ui.UclidExecutableExtensionFactory:uclid.xtext.ui.wizard.UclidNewProjectWizard"
+			id="uclid.xtext.ui.wizard.UclidNewProjectWizard"
+			name="Uclid Project"
+				project="true">
+		</wizard>
+	</extension>
+	<extension
+		point="org.eclipse.ui.newWizards">
+		<category id="uclid.xtext.ui.category" name="Uclid">
+		</category>
+		<wizard
+			category="uclid.xtext.ui.category"
+			class="uclid.xtext.ui.UclidExecutableExtensionFactory:org.eclipse.xtext.ui.wizard.template.TemplateNewFileWizard"
+			id="uclid.xtext.ui.wizard.UclidNewFileWizard"
+			name="Uclid File"
+			icon="icons/new_Uclid_file.png">
+		</wizard>
+	</extension>
+	<extension
+		point="org.eclipse.xtext.ui.fileTemplate">
+		<fileTemplateProvider
+			class="uclid.xtext.ui.UclidExecutableExtensionFactory:uclid.xtext.ui.wizard.UclidFileTemplateProvider"
+			grammarName="uclid.xtext.Uclid">
+		</fileTemplateProvider>
+	</extension>
+	<extension
+		point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension targetID="org.eclipse.ui.resourcePerspective">
+			<newWizardShortcut id="uclid.xtext.ui.wizard.UclidNewFileWizard"/>
+		</perspectiveExtension>
+		<perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+			<newWizardShortcut id="uclid.xtext.ui.wizard.UclidNewFileWizard"/>
+		</perspectiveExtension>
+	</extension>
+	<extension
+		point="org.eclipse.ui.menus">
+		<menuContribution
+			allPopups="false"
+			locationURI="toolbar:org.eclipse.ui.main.toolbar">
+			<toolbar
+				id="uclid.xtext.ui.toolbar">
+				<!--
+					For some reason the tooltip is not shown when hovering over the toolbar button
+					See also https://www.eclipse.org/forums/index.php/t/1079111/
+				-->
+				<command
+					commandId="org.eclipse.ui.newWizard"
+					tooltip="Create a new Uclid file">
+					<parameter
+						name="newWizardId"
+						value="uclid.xtext.ui.wizard.UclidNewFileWizard">
+					</parameter>
+				</command>
+			</toolbar>
+		</menuContribution>
+	</extension>
+
+ </plugin>

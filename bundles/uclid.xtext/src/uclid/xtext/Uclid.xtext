@@ -33,36 +33,49 @@ DeclRule : 	TypeDeclRule
 TypeDeclRule returns TypeDecl : 'type' (name=ID|'*')  '=' t=TypeRule ';'
 			|'type' name=ID  ';';
 
-InputsDeclRule :  'input' IdListRule ':'t=TypeRule ';';
+InputsDeclRule :  'input' inputs+=InputDecl (',' inputs+=InputDecl)* ':'t=TypeRule ';';
+OutputsDeclRule :  'output' outputs+=OutputDecl (',' outputs+=OutputDecl)* ':'t=TypeRule ';';
 
 
-OutputsDeclRule :  'output' IdListRule ':'t=TypeRule ';';
+TypedObjectDecl : VarDecl | InputDecl | OutputDecl | FuncDecl | ConstDecl;
 
-VarsDeclRule :  'var' (vars+=VarDecl  (',' vars+=VarDecl)*) ':' t=TypeRule ';';
+InputDecl : name=ID;
+
+OutputDecl: name=ID;
 
 VarDecl : name=ID;
 
+FuncDecl : name=ID;
+
+VarsDeclRule :  'var' (vars+=VarDecl  (',' vars+=VarDecl)*) ':' t=TypeRule ';';
 ConstsDeclRule :  'const' constants+=ConstDecl (',' constants+=ConstDecl)* ':'t=TypeRule ('=' INT )?';';
  
-ConstDecl returns VarDecl: 
-	{ConstDecl} name =ID
+ConstDecl : 
+	name =ID
 ;
-SharedVarsDeclRule :  'sharedvar' IdListRule ':'t=TypeRule ';';
 
-DefineDeclRule :  'define' name=ID  '(' (l=IdTypeListRule)? ')' ':' t=TypeRule '='e=ExprRule  ';';
+SharedVarsDeclRule :  'sharedvar' (vars+=VarDecl (',' vars+=VarDecl)*) ':'t=TypeRule ';';
 
-FunctionDecl returns VarDecl : 
-	{FunctionDecl} 'function'name=ID  '('(l=IdTypeListRule)? ')' ':'t=TypeRule ';';
+ArgList:
+	(
+		(    args+=VarDecl  (',' args+=VarDecl)* ':' t=TypeRule ) 
+		(',' args+=VarDecl  (',' args+=VarDecl)* ':' t=TypeRule )*
+	)?;
 
-ProcedureDecl returns VarDecl:  
-	{ProcedureDecl} 'procedure' name=ID  '(' (l=IdTypeListRule)? ')' 
+DefineDeclRule returns FuncDecl:  'define' name=ID  '(' inputs=ArgList ')' ':' t=TypeRule '='e=ExprRule  ';';
+
+FunctionDecl returns FuncDecl: 
+	{FunctionDecl} ('synthesis'?) 'function' name=ID  '(' inputs=ArgList  ')' ':'t=TypeRule ';';
+
+ProcedureDecl returns FuncDecl:  
+	{ProcedureDecl} 'procedure' name=ID  '(' inputs=ArgList  ')' 
 					ret=ProcReturnArgRule?
 					(req+=RequireExprsRule)* 
 					(ensure+=EnsureExprsRule)* 
 					(modifies+=ModifiesExprsRule)*
 					body=BlkStmtRule;
 
-ProcReturnArgRule :  'returns' '(' (l=IdTypeListRule)? ')';
+ProcReturnArgRule :  'returns' '(' output=ArgList ? ')';
 
 RequireExprsRule :  ( 'requires' e=ExprRule  ';' );
 
@@ -78,15 +91,18 @@ ArgMapListRule :
 ArgMapRule : {ArgMapRule} name=ID  ':' '(' (e+=ExprRule)?  ')';
 
 
-AxiomDeclRule : ('axiom' | 'assume') n=ID  ':'e=ExprRule  ';'
-| ('axiom' | 'assume') h=ExprRule  ';';
+AxiomDeclRule : ('axiom' | 'assume') (n=ID  ':')? e=ExprRule  ';';
 
 
 
 
-SpecDeclRule : prop=( 'property' | 'invariant') name=ID  ':' e=ExprRule  ';'
-			|prop=( 'property' | 'invariant') e=ExprRule  ';';
+SpecDeclRule : PropertyRule | InvariantRule; 
 
+PropertyRule :	
+	'property' ('[' ('LTL'|'CTL') ']' )? (name=ID ':')? e=ExprRule  ';' ;
+	
+InvariantRule:	
+	'invariant'  ('[' ('LTL'|'CTL') ']' )? (name=ID ':')? e=ExprRule  ';' ;
 
 InitDeclRule :  'init' body=BlkStmtRule;
 
@@ -108,28 +124,16 @@ StatementRule returns Statement:
 				);
 CallStatement :
 	{CallStatement}
-	('call' '(' (lhs+=Lhs (',' lhs+=Lhs)*)? ')' '=' target=[ProcedureDecl|FQN] '(' exprs+=ExprRule (',' exprs+=ExprRule)* ')'';')
-	|('call' target=[ProcedureDecl|FQN] '(' exprs+=ExprRule (',' exprs+=ExprRule)* ')' ';');
+	('call' ('(' (lhs+=VarReference (',' lhs+=VarReference)*)? ')' '=')? target=FunctionReference ('(' (exprs+=ExprRule (',' exprs+=ExprRule)* )?)? ')');
 	
+	
+
 AssignmentRule :
-	{Assignment} (lhs += Lhs (',' lhs+= Lhs*)?) '='  exprs+=ExprRule (',' exprs+=ExprRule)*;
+	{Assignment} (lhs += VarReference (',' lhs+= VarReference*)?) '='  exprs+=ExprRule (',' exprs+=ExprRule)*;
 	
 
 BlkStmtRule returns CompoundStatement:  '{' {CompoundStatement} dec+=VarsDeclRule* stmt+=StatementRule*  '}';
 
-//BlockVarDeclRule :  'var' l=IdListRule ':' t=TypeRule ';';
-
-
-
-
-Lhs: {Lhs} 
-	target=LhsVarRef
-	('['  index+=ExprRule (',' index+=ExprRule )*  ']')? ("'"  )?  
-	;
-
-LhsVarRef returns VarRef: 
-	var=[VarDecl|FQN] 
-;
 
 IfStmtRule 	:  'if' '('c=ExprRule')' then=BlkStmtRule ('else' else=BlkStmtRule)?;
 
@@ -143,19 +147,20 @@ CaseBlockRule :
 	e=ExprRule  ':' body=BlkStmtRule;
 
 
-ForLoopRule:  'for' iterator=VarDecl 'in' 'range' '(' lb=INT  ',' ub=INT ')' body=BlkStmtRule;
+ForLoopRule:  'for' iterator=VarDecl 'in' 'range' '(' lb=ConstRule  ',' ub=ConstRule')' body=BlkStmtRule;
 
-WhileLoopRule :  'while' '('c=ExprRule  ')' inv+=InvariantClauseRule* stmt=BlkStmtRule;
+WhileLoopRule :  'while' '('c=ExprRule  ')' inv+=SpecDeclRule* stmt=BlkStmtRule;
 
-InvariantClauseRule:  ( 'property' | 'invariant') ('[' 'LTL' ']')? e=ExprRule  ';';
 
 ExprRule : E1Rule ;
 
-E1Rule : E2Rule | '(' pred=('forall'|'exists') '(' l=IdTypeListRule? ')' '::' a=E1Rule ')' ;
+E1Rule : E2Rule 
+	| (pred=('forall'|'exists') '(' existential=ArgList')' '::' a=E1Rule )
+	| (pred=('const') '(' existential=ExprListRule')' )
+;
+E2Rule : z+=E3Rule  (op=LOGEQU q+=(E2Rule|E3Rule))* ;
 
-E2Rule : z+=E3Rule  ('<==>' q+=(E2Rule|E3Rule))* ;
-
-E3Rule : e+=E4Rule  ('==>' e+=(E3Rule|E4Rule))* ;
+E3Rule : e+=E4Rule  (op=LOGIMPLY e+=(E3Rule|E4Rule))* ;
 
 E4Rule : 	(e+=E5Rule '&&' e+=E4Rule) |
 			(e+=E5Rule '||' e+=E4Rule) |
@@ -166,7 +171,12 @@ E4Rule : 	(e+=E5Rule '&&' e+=E4Rule) |
 
 E5Rule : e+=E6Rule (op=REL_OP_RULE e+=E6Rule)* ;
 
-terminal REL_OP_RULE :  '<' | '>' | '==' | '!=' | '<=' | '>=';
+terminal LOGEQU:  '<==>' ;
+
+terminal LOGIMPLY:   '==>' ;
+
+terminal REL_OP_RULE :  ('<' | '>' | '==' | '!=' | '<=' | '>=');
+
 
 E6Rule : e+=E7Rule ('++' e+=E6Rule)* ;
 
@@ -179,34 +189,47 @@ E9Rule : e+=E10Rule  ('*'  e+=E10Rule )*;
 E10Rule : (op=('-' | '!' | '~') e=E11Rule) | e=E11Rule ;
 
 
-
-E11Rule :  E12Rule '[' l+=ExprListRule (('->'e+=ExprRule)|(':'e+=ExprRule)) ?']'
-//		| E12Rule  '[' e+=ExprRule  (','e+=ExprRule )* '->'e+=ExprRule  ']'
-//		| E12Rule  '[' e+=ExprRule  ':'e+=ExprRule  ']'
-		| E12Rule ;
+E11Rule :  E12Rule ('[' l+=ExprListRule (('->'e+=ExprRule)|(':'e+=ExprRule)) ?']') ?;
 
 
 E12Rule : j=E13Rule  
 	(
 		'(' (v=ExprListRule)? ')'
-//		| 
-//		(('.' name+=ID )+)
 	)?;
 
 
-RHSVarRef returns VarRef : 
-	({VarRef}(var=[VarDecl|FQN] prime='\''?)) 
+RHSVarRef returns VarReference : 
+	FQN
+//	({VarReference}(var=[TypedObjectDecl|FQN] prime='\''?)) 
 	;
 
-EnumRef : 
-	_enum=[EnumValue|FQN]
-;	
+FunctionReference : 
+	FQN
+//	({FunctionReference }(target=[FuncDecl|FQN])) 
+	;
+
+TypeReference returns Type: 
+	//{TypeReference} decl=[TypeDecl|FQN]
+	decl=FQN
+;
+VarReference:  
+	//var=[TypedObjectDecl|FQN]
+	FQN 
+	('['  index+=ExprRule (',' index+=ExprRule )*  ']')? ("'"  )?  
+	;
+	
 E13Rule : 	ConstRule 
 		  | RHSVarRef
+		  | FunctionReference
 		  | EnumRef
 		  | TupleExpr
 		  | IfPrimaryExpr
 		  | ParenthesisExpr; 
+
+
+EnumRef : 
+	_enum=[EnumValue|FQN]
+;	
 
 TupleExpr : 
 	'{'e+=ExprRule  (','e+=ExprRule )* '}'
@@ -227,7 +250,7 @@ TypeRule returns Type:
 		|TupleTypeRule 
 		|RecordTypeRule
 		|ArrayTypeRule
-		|SynonymTypeRule;
+		|TypeReference;
 		//|ExternalTypeRule;
 
 PrimitiveTypeRule returns Type:   t=('boolean' | 'integer' | BV);
@@ -242,13 +265,19 @@ EnumValue returns VarDecl:
 
 TupleTypeRule returns Type: {TupleTypeRule} '{'tuple+=TypeRule (',' tuple+=TypeRule)* '}';
 
-RecordTypeRule returns Type: {RecordTypeRule} 'record' '{' fields+=IdTypeListRule '}';
+
+
+RecordTypeRule returns Type: {RecordTypeRule} 'record' '{' 
+	(
+		(    fields+=VarDecl  (',' fields+=VarDecl)* ':' type=TypeRule ) 
+		(',' fields+=VarDecl  (',' fields+=VarDecl)* ':' type=TypeRule )*
+	)?
+	'}'	
+;
 
 ArrayTypeRule returns Type: {ArrayTypeRule} '['b+=TypeRule (',' b+=TypeRule)* ']' base+=TypeRule;
 
-SynonymTypeRule returns Type: 
-	{SynonymTypeRule} decl=[TypeDecl]
-;
+
 
 
 ControlBlockRule : {ControlBlockRule} 'control' '{' cmd+=CmdRule * '}';
@@ -270,222 +299,7 @@ CmdNameRule :  'bmc'
 
 IdListRule 	:  name+=ID |	name+=ID  ',' l=IdListRule;
 
-IdTypeListRule : k+=ID  (',' z+=ID )* ':' t=TypeRule (',' l=IdTypeListRule)?;
+//IdTypeListRule : k+=ID  (',' z+=ID )* ':' t=TypeRule (',' l=IdTypeListRule)?;
 
 ExprListRule :{ExprListRule} exprs+=ExprRule (',' exprs+=ExprRule)*;
 
-
-/*Module:
-	'module' name=ID '{'
-		(decls+=Declaration)+
-	'}';
-
-Init:
-	'init' init=CompoundStatement
-;	
-Next :
-	'next' next=CompoundStatement
-;
-Declaration : FuncDecl | TypeDecl | ConstDecl | ProcDecl | VarDecl | InputDecl | DefineDecl | InstanceDecl | Init | Next;
-
-TypeRef :
-	BuiltInTypeRef | LocalTypeRef
-;
-LocalTypeRef:
-	(path+=[Declaration])('.' path+=[Declaration]);
-
-
-BuiltInTypeRef:
-	'bv'size=INT
-;
-
-VarDecl:
-	'var' name=ID ':' type=TypeRef;
-
-InputDecl:
-	'input' name=ID ':' type=TypeRef;
-
-FuncDecl: 'function' name=ID '(' args+=ArgDecl (',' args+=ArgDecl)* ')' ':' returnType=TypeRef;	
-
-DefineDecl: 'define' name=ID '(' args+=ArgDecl (',' args+=ArgDecl)* ')' '=' returnType=TypeRef (body=CompoundStatement)?;	
-
-InstanceDecl : 'instance' name=ID '(' (ID ':' ID)  (',' (ID ':' ID))* ')' ;	
-
-ExprList:
-	exprs+=LOrExpression (';' exprs+=LOrExpression);
-	
-ProcDecl: 'procedure' name=ID '(' args+=ArgDecl (',' args+=ArgDecl)* ')' 
-'returns' ret=TypeRef (body=CompoundStatement)?	
-'requires' requires=ExprList
-'ensures' ensures=ExprList
-'modifies' mod+=TypeRef (modBody=CompoundStatement)?;	
-
-TypeDecl : 'type' name=ID '=' alias=TypeRef;
-ConstDecl: 'const' name=ID ':' type=TypeRef;
-ArgDecl: name =ID ':' type= TypeRef;
-
-Statement: 
-	AssumeStmt | AssignStatement | IfStatement | CompoundStatement |SwitchStatement
-;
-
-AssumeStmt  :
-	kw='assume'|'axiom' name=ID ':' expr=LOrExpression 
-;
-
-CompoundStatement:
-	'{'
-		(statements+=Statement ';')+
-	'}'
-;
-AssignStatement :
-	(dest=[Declaration] ':=')? value=Expression;
-	
-IfStatement :
-	'if' '(' cond=LOrExpression ')' 
-	then=CompoundStatement
-	 (=>'else' else=CompoundStatement)?
-; 
-Control :
-	'çontrol' '{' CommandList '}';
-	
-CommandList : 
- 	Command (";" Command)*;
- 
-Command: CommandName;
- 
- terminal CommandName:			
-	'bmc'
-| 'check'
-| 'clear context'
-| 'induction'
-| 'print'
-| 'print_cex'
-| 'print_module'
-| 'print_results'
-| 'print_smt2' 'synthesize_invariant'
-| 'unroll'
-| 'verify'
-;	 
-SwitchStatement :
-	'case' 
-		(cases+=CaseStatement)+
-	 'esac'
-; 
-
-CaseStatement :
-	expr=Expression body=CompoundStatement
-;
-
-Expression: 
-	LOrExpression | 
-	LAndExpression | 
-	OrExpression | 
-	AndExpression | 
-	RelationalExpression |
-	RangeExpression |
-	AdditiveExpression |
-	MultiplicativeExpression |
-	UnaryPostfixExpression |
-	FieldExpression |
-	PrimaryExpression |
-	LiteralExpression |
-	CallExpression |
-	ArrayExpression |
-	IfExpression
-	
-;
-IfExpression :
-	IfStatement
-;
-LOrExpression :
-	LAndExpression ( (name=LOR_KW children+=LAndExpression))*;
-
-
-LAndExpression :
-	OrExpression ( (name=LAND_KW children+=OrExpression))*;
-
-
-OrExpression :
-	AndExpression ( (name=OR_KW children+=AndExpression))*;
-
-AndExpression :
-	RelationalExpression ( (name=AND_KW children+=RelationalExpression))*;
-
-RelationalExpression :
-	RangeExpression (( name=(LT_KW|GT_KW|LE_KW|GE_KW|EQ_KW|NEQ_KW) children+=RelationalExpression))?;
-
-
-RangeExpression :
-	(AdditiveExpression ( name=':' children+=AdditiveExpression (=>':' children+=AdditiveExpression )?)?)
-	;
-
-AdditiveExpression :
-	MultiplicativeExpression ( name=('+'|'-') children+=AdditiveExpression)?;
-
-
-MultiplicativeExpression :
-	(UnaryPostfixExpression) ((name=ARITH_KW children+=MultiplicativeExpression))?;
-
-UnaryPostfixExpression :
-	(FieldExpression )(('\'' )?) ; 
-
-FieldExpression :
-	(PrimaryExpression )(( ('.') field=Expression)?) ; 
-
-CallExpression :
-	ArrayExpression ( '(' (index+=Expression (',' index+=Expression)*)? ')')?;
-
-ArrayExpression:
-	PrimaryExpression '['  (children+=PrimaryExpression ((';') children+=PrimaryExpression )*)?  ']';
-
-
-PrimaryExpression :
-	LiteralExpression | SymbolExpression | ParanthesizedExpression    ;
-
-ParanthesizedExpression :
-	(=>'(' AssignStatement')');
-	
-	
-SymbolExpression  :
-	{SymbolExpression} symbol=([Declaration]);
-	
-LiteralExpression :
-	v=INT |b=BOOL;
-//	({ComplexNumberExpression} im=IMAGINARY_FLOATNUMBER)|
-//	({GenericExpression} name=RESERVED)|
-//	({StringExpression} /*QUOTE_KW value=(DQUOTE_STRING|SQUOTE_STRING))| 
-//	({StringExpression} value=)
-	
-	
-
-terminal LOR_KW : '||';
-terminal LAND_KW : '&&';	
-terminal OR_KW : '|';	
-terminal AND_KW : '&'; 	
-
-//terminal INT_KW : 'int';
-//terminal FIXED_KW : 'fixed';
-//terminal FLOAT_KW : 'float';
-//terminal COMPLEX_KW : 'complex';
-
-terminal LT_KW : '<';
-terminal GT_KW : '>';
-terminal LE_KW : '<=';
-terminal GE_KW : '>=';
-terminal EQ_KW : '==';
-terminal NEQ_KW : '/=';
-
-terminal BOOL : ('true' | 'false');
-terminal ARITH_KW : ('*' | '/' | '//' | '.*' | './' | '\\' | '.\\' | '**' | '.**' | '.^'  );
-terminal ELLIPSIS: '...' WS* (SL_COMMENT );
-
-terminal INT returns ecore::EInt: ('0'..'9')+;
-terminal ML_COMMENT : '' -> '';
-terminal SL_COMMENT : '//' !('\n'|'\r')* ('\r'? '\n')?;
-
-terminal WS         : (' '|'\t'|'\r'|'\n')+;
-
-terminal ANY_OTHER: .;
-*/
-
-	
