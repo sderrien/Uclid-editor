@@ -3,7 +3,7 @@
    <description name="Uclid update site">
       Uclid editor update site
    </description>
-   <feature url="features/uclid.xtext.feature_1.0.0.202101161157.jar" id="uclid.xtext.feature" version="1.0.0.202101161157">
+   <feature url="features/uclid.xtext.feature_1.0.0.202101190948.jar" id="uclid.xtext.feature" version="1.0.0.202101190948">
       <category name="Uclid"/>
    </feature>
    <category-def name="Uclid" label="Uclid"/>
